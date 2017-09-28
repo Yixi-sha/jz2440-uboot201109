@@ -131,19 +131,19 @@ copyex:
 	bne	copyex
 #endif
 
-#if defined(CONFIG_S3C2400) || defined(CONFIG_S3C2410)
+#if defined(CONFIG_S3C2400) || defined(CONFIG_S3C2410)|| defined(CONFIG_S3C2440)
 	/* turn off the watchdog */
 
-# if defined(CONFIG_S3C2400)
-#  define pWTCON	0x15300000
-#  define INTMSK	0x14400008	/* Interupt-Controller base addresses */
-#  define CLKDIVN	0x14800014	/* clock divisor register */
+#if defined(CONFIG_S3C2400)
+#define pWTCON	0x15300000
+#define INTMSK	0x14400008	/* Interupt-Controller base addresses */
+#define CLKDIVN	0x14800014	/* clock divisor register */
 #else
-#  define pWTCON	0x53000000
-#  define INTMSK	0x4A000008	/* Interupt-Controller base addresses */
-#  define INTSUBMSK	0x4A00001C
-#  define CLKDIVN	0x4C000014	/* clock divisor register */
-# endif
+#define pWTCON	0x53000000
+#define INTMSK	0x4A000008	/* Interupt-Controller base addresses */
+#define INTSUBMSK	0x4A00001C
+#define CLKDIVN	0x4C000014	/* clock divisor register */
+#endif
 
 	ldr	r0, =pWTCON
 	mov	r1, #0x0
@@ -155,18 +155,27 @@ copyex:
 	mov	r1, #0xffffffff
 	ldr	r0, =INTMSK
 	str	r1, [r0]
-# if defined(CONFIG_S3C2410)
+#if defined(CONFIG_S3C2410)
 	ldr	r1, =0x3ff
 	ldr	r0, =INTSUBMSK
 	str	r1, [r0]
-# endif
+#endif
+#if defined(CONFIG_S3C2440)
+	ldr	r1, =0x7fff
+	ldr	r0, =INTSUBMSK
+	str	r1, [r0]
+	
+	bl init_clock
+#endif
 
+#if defined(CONFIG_S3C2410)
 	/* FCLK:HCLK:PCLK = 1:2:4 */
 	/* default FCLK is 120 MHz ! */
 	ldr	r0, =CLKDIVN
 	mov	r1, #3
 	str	r1, [r0]
-#endif	/* CONFIG_S3C2400 || CONFIG_S3C2410 */
+#endif
+#endif	/* CONFIG_S3C2400 || CONFIG_S3C2410 || CONFIG_S3C2440 */
 
 	/*
 	 * we do sys-critical inits only at reboot,
@@ -183,6 +192,17 @@ relocate:				/* relocate U-Boot to RAM	    */
 	cmp	r0, r1			/* don't reloc during debug         */
 	beq	stack_setup
 
+	mov r2, #0
+	str r2, [r2]
+	ldr r2, [r2]
+	cmp r2, #0
+	bne copy_to_ram_from_nor
+	mov sp, #0x1000
+	
+	bl copy_to_ram_from_nand
+	b stack_setup
+
+copy_to_ram_from_nor:	
 	ldr	r2, _armboot_start
 	ldr	r3, _bss_start
 	sub	r2, r3, r2		/* r2 <- size of armboot            */
@@ -434,3 +454,21 @@ fiq:
 	bl	do_fiq
 
 #endif
+
+#define CLKDIVN 0x4c000014
+#define MPLLCON 0x4c000004
+#define MPLL_405MHZ ((127<<12)|(2<<4)|(1<<0))
+
+init_clock:
+	ldr r0, =CLKDIVN
+	mov r1, #0x5
+	str r1, [r0]
+	
+	mcr p15,0,r0,c1,c0,0
+	orr r0,r0,#0xc0000000
+	mcr p15,0,r0,c1,c0,0
+	
+	ldr r0, =MPLLCON
+	ldr r1, =MPLL_405MHZ
+	str r1, [r0]
+	mov pc, lr

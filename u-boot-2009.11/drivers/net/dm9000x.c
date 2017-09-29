@@ -361,7 +361,7 @@ static int dm9000_init(struct eth_device *dev, bd_t *bd)
 	DM9000_iow(DM9000_IMR, IMR_PAR);
 
 	i = 0;
-	while (!(phy_read(1) & 0x08)) {	/* autonegation complete bit */
+	while ((phy_read(1) & 0x08)) {	/* autonegation complete bit */
 		i=0;
 		while(!(phy_read(1) & 0x20))
 		{
@@ -369,6 +369,7 @@ static int dm9000_init(struct eth_device *dev, bd_t *bd)
 			i++;
 			if (i == 10000) {
 				printf("could not establish link\n");
+				//break;
 				return 0;
 			}
 		}

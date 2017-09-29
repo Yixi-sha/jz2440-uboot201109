@@ -37,6 +37,10 @@
 #define	CONFIG_S3C2440		1	/* in a SAMSUNG S3C2440 SoC     */
 #define CONFIG_MY2440		1	/* on a SAMSUNG MY2440 Board  */
 
+
+
+#define CONFIG_MY2440_LED 1
+
 /* input clock of PLL */
 #define CONFIG_SYS_CLK_FREQ	12000000/* the SMDK2410 has 12MHz input clock */
 
@@ -51,14 +55,23 @@
 #define CONFIG_SYS_GBL_DATA_SIZE	128	/* size in bytes reserved for initial data */
 
 #define CONFIG_UBOOT_SIZE  0x80000
+//#define CONFIG_SKIP_LOWLEVEL_INIT 1
 /*
  * Hardware drivers
  */
 #define CONFIG_NET_MULTI
-#define CONFIG_CS8900		/* we have a CS8900 on-board */
-#define CONFIG_CS8900_BASE	0x19000300
-#define CONFIG_CS8900_BUS16	/* the Linux driver does accesses as shorts */
+//#define CONFIG_CS8900		/* we have a CS8900 on-board */
+//#define CONFIG_CS8900_BASE	0x19000300
+//#define CONFIG_CS8900_BUS16	/* the Linux driver does accesses as shorts */
 
+
+#define CONFIG_NET_RETRY_COUNT  20
+#define CONFIG_DRIVER_DM9000 1
+#define CONFIG_DM9000_BASE  0x20000000
+#define DM9000_IO  CONFIG_DM9000_BASE
+#define DM9000_DATA (CONFIG_DM9000_BASE+4)
+#define CONFIG_DM9000_USE_16BIT 1
+#define CONFIG_DM9000_NO_SROM 1
 /*
  * select serial console configuration
  */
@@ -94,13 +107,15 @@
 #define CONFIG_CMD_DATE
 #define CONFIG_CMD_ELF
 #define CONFIG_CMD_NAND
+#define CONFIG_CMD_PING
 
 #define CONFIG_BOOTDELAY	3
 /*#define CONFIG_BOOTARGS	"root=ramfs devfs=mount console=ttySA0,9600" */
-/*#define CONFIG_ETHADDR	08:00:3e:26:0a:5b */
+#define CONFIG_ETHADDR	08:90:00:26:0a:5b 
 #define CONFIG_NETMASK          255.255.255.0
-#define CONFIG_IPADDR		10.0.0.110
-#define CONFIG_SERVERIP		10.0.0.1
+#define CONFIG_IPADDR		192.168.1.11
+#define CONFIG_SERVERIP		192.168.1.100
+#define CONFIG_GATEWAYIP		192.168.1.1
 /*#define CONFIG_BOOTFILE	"elinos-lart" */
 /*#define CONFIG_BOOTCOMMAND	"tftp; bootm" */
 
@@ -114,7 +129,7 @@
  * Miscellaneous configurable options
  */
 #define	CONFIG_SYS_LONGHELP				/* undef to save memory		*/
-#define	CONFIG_SYS_PROMPT		"SMDK2410 # "	/* Monitor Command Prompt	*/
+#define	CONFIG_SYS_PROMPT		"my2440 # "	/* Monitor Command Prompt	*/
 #define	CONFIG_SYS_CBSIZE		256		/* Console I/O Buffer Size	*/
 #define	CONFIG_SYS_PBSIZE (CONFIG_SYS_CBSIZE+sizeof(CONFIG_SYS_PROMPT)+16) /* Print Buffer Size */
 #define	CONFIG_SYS_MAXARGS		16		/* max number of command args	*/
@@ -155,11 +170,12 @@
 /*-----------------------------------------------------------------------
  * FLASH and environment organization
  */
-
-#define CONFIG_AMD_LV400	1	/* uncomment this if you have a LV400 flash */
 #if 0
-#define CONFIG_AMD_LV800	1	/* uncomment this if you have a LV800 flash */
+#define CONFIG_AMD_LV400	1	/* uncomment this if you have a LV400 flash */
 #endif
+#define CONFIG_AMD_LV800	1	/* uncomment this if you have a LV800 flash */
+
+
 
 #define CONFIG_SYS_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #ifdef CONFIG_AMD_LV800

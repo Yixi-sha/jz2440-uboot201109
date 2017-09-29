@@ -361,12 +361,16 @@ static int dm9000_init(struct eth_device *dev, bd_t *bd)
 	DM9000_iow(DM9000_IMR, IMR_PAR);
 
 	i = 0;
-	while (!(phy_read(1) & 0x20)) {	/* autonegation complete bit */
-		udelay(1000);
-		i++;
-		if (i == 10000) {
-			printf("could not establish link\n");
-			return 0;
+	while (!(phy_read(1) & 0x08)) {	/* autonegation complete bit */
+		i=0;
+		while(!(phy_read(1) & 0x20))
+		{
+			udelay(1000);
+			i++;
+			if (i == 10000) {
+				printf("could not establish link\n");
+				return 0;
+			}
 		}
 	}
 
@@ -554,6 +558,16 @@ static void dm9000_get_enetaddr(struct eth_device *dev)
 	int i;
 	for (i = 0; i < 3; i++)
 		dm9000_read_srom_word(i, dev->enetaddr + (2 * i));
+#else
+	u8 i;
+	char *s, *e;
+	s = getenv("ethaddr");
+	for(i = 0;i < 6;i++)
+	{
+		dev->enetaddr[i] = s ? simple_strtoul(s, &e, 16) : 0;
+			if(s)
+				s = (*e) ? e + 1 :e;
+	}		
 #endif
 }
 

@@ -106,7 +106,7 @@ int board_init (void)
 	gpio->GPDUP = 0x0000FFFF;
 	gpio->GPECON = 0xAAAAAAAA;
 	gpio->GPEUP = 0x0000FFFF;
-	gpio->GPFCON = 0x000055AA;
+	gpio->GPFCON = 0x0000AAAA;
 	gpio->GPFUP = 0x000000FF;
 	gpio->GPGCON = 0xFF95FFBA;
 	gpio->GPGUP = 0x0000FFFF;
@@ -139,6 +139,8 @@ int board_eth_init(bd_t *bis)
 	int rc = 0;
 #ifdef CONFIG_CS8900
 	rc = cs8900_initialize(0, CONFIG_CS8900_BASE);
+#elif defined(CONFIG_DRIVER_DM9000)
+    rc = dm9000_initialize(bis);
 #endif
 	return rc;
 }

@@ -389,6 +389,25 @@ int do_nand(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 			else
 				ret = nand_write_skip_bad(nand, off, &size,
 							  (u_char *)addr);
+#if defined(CONFIG_CMD_YAFFS)
+        } else if (!strncmp(s, ".yaffs", 6)) {
+            if (read) {
+                printf("nand read.yaffs is not support yet!\n");
+            } else {
+                nand->rw_oob = 1;
+#if defined(CONFIG_YAFFS_SKIPFB)
+                nand->skip_fb = 1;
+#else 
+                nand->skip_fb = 0;
+#endif
+                ret = nand_write_skip_bad(nand, off, &size,
+                        (u_char *)addr);
+#if defined(CONFIG_YAFFS_SKIPFB)
+                nand->skip_fb = 0;
+#endif
+                nand->rw_oob = 0;
+            }
+#endif							  
 		} else if (!strcmp(s, ".oob")) {
 			/* out-of-band data */
 			mtd_oob_ops_t ops = {

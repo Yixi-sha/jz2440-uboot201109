@@ -36,7 +36,7 @@
 #define CONFIG_ARM920T		1	/* This is an ARM920T Core	*/
 #define	CONFIG_S3C2440		1	/* in a SAMSUNG S3C2440 SoC     */
 #define CONFIG_MY2440		1	/* on a SAMSUNG MY2440 Board  */
-
+//#define CONFIG_SKIP_LOWLEVEL_INIT 1
 
 
 #define CONFIG_MY2440_LED 1
@@ -108,19 +108,33 @@
 #define CONFIG_CMD_ELF
 #define CONFIG_CMD_NAND
 #define CONFIG_CMD_PING
+#define CONFIG_CMD_YAFFS
+#define CONFIG_YAFFS_SKIPFB
 
-#define CONFIG_BOOTDELAY	3
-/*#define CONFIG_BOOTARGS	"root=ramfs devfs=mount console=ttySA0,9600" */
+
+/* tag list*/
+#define CONFIG_SETUP_MEMORY_TAGS
+#define CONFIG_INITRD_TAG
+#define CONFIG_CMDLINE_TAG
+
+
+//#define CONFIG_BOOTDELAY	3
+#define CONFIG_BOOTARGS	"root=/dev/mtdblock3 console=ttySAC0,115200"
+
 #define CONFIG_ETHADDR	08:90:00:26:0a:5b 
 #define CONFIG_NETMASK          255.255.255.0
-#define CONFIG_IPADDR		192.168.1.11
-#define CONFIG_SERVERIP		192.168.1.100
-#define CONFIG_GATEWAYIP		192.168.1.1
+#define CONFIG_IPADDR		192.168.0.111
+#define CONFIG_SERVERIP		192.168.0.103
+#define CONFIG_GATEWAYIP		192.168.0.1
 /*#define CONFIG_BOOTFILE	"elinos-lart" */
 /*#define CONFIG_BOOTCOMMAND	"tftp; bootm" */
+#define CONFIG_BOOTDELAY	5
+#define CONFIG_BOOTFILE	    "uImage" 
+#define CONFIG_BOOTCOMMAND	"tftp uImage; bootm" 
 
 #if defined(CONFIG_CMD_KGDB)
 #define CONFIG_KGDB_BAUDRATE	115200		/* speed to run kgdb serial port */
+
 /* what's this ? it's not used anywhere */
 #define CONFIG_KGDB_SER_INDEX	1		/* which serial port to use */
 #endif
@@ -138,7 +152,7 @@
 #define CONFIG_SYS_MEMTEST_START	0x30000000	/* memtest works on	*/
 #define CONFIG_SYS_MEMTEST_END		0x33F00000	/* 63 MB in DRAM	*/
 
-#define	CONFIG_SYS_LOAD_ADDR		0x33000000	/* default load address	*/
+#define	CONFIG_SYS_LOAD_ADDR		0x30008000	/* default load address	*/
 
 #define	CONFIG_SYS_HZ			1000
 

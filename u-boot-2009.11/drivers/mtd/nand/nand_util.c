@@ -482,11 +482,27 @@ int nand_write_skip_bad(nand_info_t *nand, loff_t offset, size_t *length,
 	u_char *p_buffer = buffer;
 
 	/* Reject writes, which are not page aligned */
-	if ((offset & (nand->writesize - 1)) != 0 ||
-	    (*length & (nand->writesize - 1)) != 0) {
-		printf ("Attempt to write non page aligned data\n");
-		return -EINVAL;
-	}
+    if (nand->rw_oob == 1) {
+        size_t oobsiz = nand->oobsize;
+        size_t datsiz = nand->writesize;
+        int pages;
+
+        if ((*length) % (oobsiz + datsiz) != 0) {
+            printf("Attempt to write non page + oob(%d + %d) aligned data\n",
+                   oobsiz, datsiz);
+            *length = 0;
+            return -EINVAL;
+        }
+        pages = *length / (datsiz + oobsiz);
+        left_to_write = pages * datsiz;
+        *length = left_to_write;
+    } else {
+        if ((offset & (nand->writesize - 1)) != 0 ||
+                (*length & (nand->writesize - 1)) != 0) {
+            printf ("Attempt to write non page aligned data\n");
+            return -EINVAL;
+        }
+    }
 
 	len_incl_bad = get_len_incl_bad (nand, offset, *length);
 
@@ -495,7 +511,7 @@ int nand_write_skip_bad(nand_info_t *nand, loff_t offset, size_t *length,
 		return -EINVAL;
 	}
 
-	if (len_incl_bad == *length) {
+	if (len_incl_bad == *length && !nand->rw_oob) {
 		rval = nand_write (nand, offset, length, buffer);
 		if (rval != 0)
 			printf ("NAND write to offset %llx failed %d\n",
@@ -516,12 +532,19 @@ int nand_write_skip_bad(nand_info_t *nand, loff_t offset, size_t *length,
 			offset += nand->erasesize - block_offset;
 			continue;
 		}
+    if (nand->skip_fb == 1) {
+            nand->skip_fb = 0;
+            printf("Skip the first good block 0x%08lx\n",
+                   (ulong)(offset & ~(nand->erasesize - 1)));
+            offset += nand->erasesize - block_offset;
+            continue;
+    }
 
 		if (left_to_write < (nand->erasesize - block_offset))
 			write_size = left_to_write;
 		else
 			write_size = nand->erasesize - block_offset;
-
+ 		printf("\rWriting at 0x%08lx -- ",(ulong)offset);
 		rval = nand_write (nand, offset, &write_size, p_buffer);
 		if (rval != 0) {
 			printf ("NAND write to offset %llx failed %d\n",
@@ -531,8 +554,14 @@ int nand_write_skip_bad(nand_info_t *nand, loff_t offset, size_t *length,
 		}
 
 		left_to_write -= write_size;
-		offset        += write_size;
-		p_buffer      += write_size;
+     offset        += write_size;
+        if (nand->rw_oob == 1) {
+            size_t pages = write_size/nand->writesize;
+            p_buffer += write_size + pages * nand->oobsize;    
+        } else {
+            p_buffer      += write_size;
+        }
+		printf("\r%d%% is complete.", 100 - (left_to_write/(*length/100))); 
 	}
 
 	return 0;

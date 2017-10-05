@@ -368,6 +368,10 @@ void main_loop (void)
 # endif
 	}
 #endif /* CONFIG_PREBOOT */
+# if defined(CONFIG_MTD_PARTITIONS) && defined(MTDPARTS_DEFAULT)
+    if (!getenv("mtdparts"))
+        run_command("mtdparts default", 0);
+# endif
 
 #if defined(CONFIG_BOOTDELAY) && (CONFIG_BOOTDELAY >= 0)
 	s = getenv ("bootdelay");

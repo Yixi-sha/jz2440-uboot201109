@@ -146,7 +146,7 @@
 /*#define CONFIG_BOOTCOMMAND	"tftp; bootm" */
 #define CONFIG_BOOTDELAY	5
 #define CONFIG_BOOTFILE	    "uImage" 
-#define CONFIG_BOOTCOMMAND	" bootm" 
+#define CONFIG_BOOTCOMMAND	"tftp uImage; bootm" 
 
 #if defined(CONFIG_CMD_KGDB)
 #define CONFIG_KGDB_BAUDRATE	115200		/* speed to run kgdb serial port */

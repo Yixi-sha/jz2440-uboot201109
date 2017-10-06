@@ -184,6 +184,46 @@ SMRDATA:
     
     
     
+
+#ifdef CONFIG_ENABLE_MMU
+/*
+ * MMU Table for My2440
+ */
+
+/* form a first-level section entry */
+.macro FL_SECTION_ENTRY base,ap,d,c,b
+	.word (\base << 20) | (\ap << 10) | \
+	      (\d << 5) | (1<<4) | (\c << 3) | (\b << 2) | (1<<1)
+.endm
+
+.section .mmudata, "a"
+	.align 14    @16KB对齐
+	.globl mmu_table
+mmu_table:
+	.set __base,0
+	/* 1:1 mapping for debugging */
+	.rept 0x600
+	FL_SECTION_ENTRY __base,3,0,0,0
+	.set __base,__base+1
+	.endr
+
+	/* access is not allowed. */
+	.rept 0xC00 - 0x600
+	.word 0x00000000
+	.endr
+
+	/* 128MB for SDRAM 0xC0000000 -> 0x30000000 */
+	.set __base, 0x300
+	.rept 0xC80 - 0xC00
+	FL_SECTION_ENTRY __base,3,0,1,1
+	.set __base,__base+1
+	.endr
+
+	/* access is not allowed. */
+	.rept 0x1000 - 0xc80
+	.word 0x00000000
+	.endr
+#endif
     
 
 

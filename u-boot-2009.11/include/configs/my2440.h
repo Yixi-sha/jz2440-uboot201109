@@ -40,16 +40,23 @@
 /*
  * For debug
  */
-#define CONFIG_MY2440_LED	1
-#define CONFIG_ASM_DEBUG	1
+//#define CONFIG_MY2440_LED	1
+//#define CONFIG_ASM_DEBUG	1
 
 
 /* input clock of PLL */
 #define CONFIG_SYS_CLK_FREQ	12000000/* the SMDK2410 has 12MHz input clock */
 
+//#define USE_920T_MMU		1
+//#undef CONFIG_USE_IRQ			/* we don't need IRQ/FIQ stuff */
+#define CONFIG_ENABLE_MMU		
+#define CONFIG_USE_IRQ         /* 使用IRQ中断 */
+#define CONFIG_USB_DEVICE      /* USB设备支持 */
+#define CONFIG_CMD_DNW         /* dnw命令支持 */
 
-#define USE_920T_MMU		1
-#undef CONFIG_USE_IRQ			/* we don't need IRQ/FIQ stuff */
+#define CONFIG_USB_OHCI        /* USB Host 支持 */
+#define CONFIG_USB_STORAGE     /* USB存储设备支持 */
+//#define CONFIG_CMD_USB         /* USB Host 命令支持 */
 
 /*
  * Size of malloc() pool

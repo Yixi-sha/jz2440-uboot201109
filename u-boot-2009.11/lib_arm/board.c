@@ -381,7 +381,10 @@ void start_armboot (void)
 
 	/* enable exceptions */
 	enable_interrupts ();
-
+    
+#ifdef CONFIG_USB_DEVICE
+    usb_init_slave();
+#endif
 	/* Perform network card initialisation if necessary */
 #ifdef CONFIG_DRIVER_TI_EMAC
 	/* XXX: this needs to be moved to board init */

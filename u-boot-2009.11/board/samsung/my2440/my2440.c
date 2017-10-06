@@ -100,7 +100,8 @@ int board_init (void)
 	gpio->GPACON = 0x007FFFFF;
 	gpio->GPBCON = 0x00044555;
 	gpio->GPBUP = 0x000007FF;
-	gpio->GPCCON = 0xAAAAAAAA;
+	gpio->GPCCON = 0xAAAAA6AA;
+	gpio->GPCDAT &= ~(1<<5);    /* ½ûÖ¹USBÉè±¸*/
 	gpio->GPCUP = 0x0000FFFF;
 	gpio->GPDCON = 0xAAAAAAAA;
 	gpio->GPDUP = 0x0000FFFF;

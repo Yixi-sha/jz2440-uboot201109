@@ -37,10 +37,50 @@
 #include <s3c2410.h>
 #endif
 #include <asm/proc-armv/ptrace.h>
+#include <asm/io.h>
+
+#define BIT_ALLMSK		(0xFFFFFFFF)
+
+void (*isr_handle_array[50])(void);
+
 
 void do_irq (struct pt_regs *pt_regs)
 {
 	struct s3c24x0_interrupt *irq = s3c24x0_get_base_interrupt();
 	u_int32_t intpnd = readl(&irq->INTPND);
 
+	struct s3c24x0_gpio *gpio = s3c24x0_get_base_gpio();
+	unsigned long oft = readl(&irq->INTOFFSET);
+    
+	/* clean int */
+	if (oft == 4) 
+        gpio->EINTPEND = 1<<7;
+	irq->SRCPND = 1<<oft;	
+	irq->INTPND	= intpnd;	 
+
+	/* run the isr */
+	isr_handle_array[oft]();
+}
+
+void dummy_isr(void)
+{
+	struct s3c24x0_interrupt *intregs = s3c24x0_get_base_interrupt();
+	printf("dummy_isr, INTOFFSET: %d, INTMSK = 0x%x\n", 
+            intregs->INTOFFSET, intregs->INTMSK);
+	while(1);
+}
+
+int arch_interrupt_init(void)
+{
+	int i = 0;
+	struct s3c24x0_interrupt *intregs = s3c24x0_get_base_interrupt();
+    
+	intregs->INTMOD = 0x0;	          // All=IRQ mode
+	intregs->INTMSK = BIT_ALLMSK;	  // All interrupt is masked.
+	intregs->INTPND = intregs->INTPND;	  // clear all.
+ 
+	for (i = 0; i < ARRAY_SIZE(isr_handle_array); i++)
+		isr_handle_array[i] = dummy_isr;
+
+    return 0;
 }

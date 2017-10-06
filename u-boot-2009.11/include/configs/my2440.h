@@ -124,6 +124,19 @@
                          "-(file-system)"
 
 
+
+
+
+
+
+
+/* support SD card */
+#define CONFIG_CMD_MMC
+#define CONFIG_MMC 
+#define CONFIG_MMC_S3C
+#define CONFIG_MMC_WIDE   /* 4bit的数据线宽度 */
+#define CONFIG_CMD_FAT
+#define CONFIG_DOS_PARTITION
 /* tag list */
 #define CONFIG_SETUP_MEMORY_TAGS
 #define CONFIG_INITRD_TAG
@@ -138,7 +151,7 @@
 
 #define CONFIG_BOOTDELAY	4
 #define CONFIG_BOOTFILE	    "uImage" 
-#define CONFIG_BOOTCOMMAND	" bootm" 
+#define CONFIG_BOOTCOMMAND	"nand read 30008000 kernel \;bootm" 
 
 #if defined(CONFIG_CMD_KGDB)
 #define CONFIG_KGDB_BAUDRATE	115200		/* speed to run kgdb serial port */
@@ -203,8 +216,8 @@
 
 #define CONFIG_SYS_MAX_FLASH_BANKS	1	/* max number of memory banks */
 #ifdef CONFIG_AMD_LV800
-#define PHYS_FLASH_SIZE		0x00100000 /* 1MB */
-#define CONFIG_SYS_MAX_FLASH_SECT	(19)	/* max number of sectors on one chip */
+#define PHYS_FLASH_SIZE		0x00200000 /* 1MB */
+#define CONFIG_SYS_MAX_FLASH_SECT	(35)	/* max number of sectors on one chip */
 #define CONFIG_ENV_ADDR		(CONFIG_SYS_FLASH_BASE + 0x0F0000) /* addr of environment */
 #endif
 #ifdef CONFIG_AMD_LV400

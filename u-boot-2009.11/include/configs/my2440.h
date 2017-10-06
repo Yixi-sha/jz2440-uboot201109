@@ -34,12 +34,15 @@
  * (easy to change)
  */
 #define CONFIG_ARM920T		1	/* This is an ARM920T Core	*/
-#define	CONFIG_S3C2440		1	/* in a SAMSUNG S3C2440 SoC     */
-#define CONFIG_MY2440		1	/* on a SAMSUNG MY2440 Board  */
-//#define CONFIG_SKIP_LOWLEVEL_INIT 1
+#define	CONFIG_S3C2440		1	/* in a SAMSUNG S3C2410 SoC     */
+#define CONFIG_MY2440		1	/* on a SAMSUNG SMDK2410 Board  */
 
+/*
+ * For debug
+ */
+#define CONFIG_MY2440_LED	1
+#define CONFIG_ASM_DEBUG	1
 
-#define CONFIG_MY2440_LED 1
 
 /* input clock of PLL */
 #define CONFIG_SYS_CLK_FREQ	12000000/* the SMDK2410 has 12MHz input clock */
@@ -54,24 +57,18 @@
 #define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + 1024*1024)
 #define CONFIG_SYS_GBL_DATA_SIZE	128	/* size in bytes reserved for initial data */
 
-#define CONFIG_UBOOT_SIZE  0x80000
-//#define CONFIG_SKIP_LOWLEVEL_INIT 1
 /*
  * Hardware drivers
  */
 #define CONFIG_NET_MULTI
-//#define CONFIG_CS8900		/* we have a CS8900 on-board */
-//#define CONFIG_CS8900_BASE	0x19000300
-//#define CONFIG_CS8900_BUS16	/* the Linux driver does accesses as shorts */
+#define CONFIG_NET_RETRY_COUNT		20
+#define CONFIG_DRIVER_DM9000		1
+#define CONFIG_DM9000_BASE		    0x20000000
+#define DM9000_IO 			        CONFIG_DM9000_BASE
+#define DM9000_DATA 			    (CONFIG_DM9000_BASE+4)
+#define CONFIG_DM9000_USE_16BIT		1
+#define CONFIG_DM9000_NO_SROM		1
 
-
-#define CONFIG_NET_RETRY_COUNT  20
-#define CONFIG_DRIVER_DM9000 1
-#define CONFIG_DM9000_BASE  0x20000000
-#define DM9000_IO  CONFIG_DM9000_BASE
-#define DM9000_DATA (CONFIG_DM9000_BASE+4)
-#define CONFIG_DM9000_USE_16BIT 1
-#define CONFIG_DM9000_NO_SROM 1
 /*
  * select serial console configuration
  */
@@ -106,8 +103,8 @@
 #define CONFIG_CMD_CACHE
 #define CONFIG_CMD_DATE
 #define CONFIG_CMD_ELF
-#define CONFIG_CMD_NAND
 #define CONFIG_CMD_PING
+#define CONFIG_CMD_NAND
 #define CONFIG_CMD_YAFFS
 #define CONFIG_YAFFS_SKIPFB
 
@@ -127,30 +124,24 @@
                          "-(file-system)"
 
 
-
-/* tag list*/
+/* tag list */
 #define CONFIG_SETUP_MEMORY_TAGS
 #define CONFIG_INITRD_TAG
 #define CONFIG_CMDLINE_TAG
 
-
-//#define CONFIG_BOOTDELAY	3
-#define CONFIG_BOOTARGS	"root=/dev/mtdblock3 console=ttySAC0,115200"
-
-#define CONFIG_ETHADDR	08:90:00:26:0a:5b 
-#define CONFIG_NETMASK          255.255.255.0
+#define CONFIG_BOOTARGS	"root=/dev/mtdblock3  console=ttySAC0,115200"
+#define CONFIG_ETHADDR	    08:90:00:A0:90:90
+#define CONFIG_NETMASK      255.255.255.0
 #define CONFIG_IPADDR		192.168.0.111
 #define CONFIG_SERVERIP		192.168.0.103
-#define CONFIG_GATEWAYIP		192.168.0.1
-/*#define CONFIG_BOOTFILE	"elinos-lart" */
-/*#define CONFIG_BOOTCOMMAND	"tftp; bootm" */
-#define CONFIG_BOOTDELAY	5
+#define CONFIG_GATEWAYIP	192.168.1.1
+
+#define CONFIG_BOOTDELAY	4
 #define CONFIG_BOOTFILE	    "uImage" 
 #define CONFIG_BOOTCOMMAND	" bootm" 
 
 #if defined(CONFIG_CMD_KGDB)
 #define CONFIG_KGDB_BAUDRATE	115200		/* speed to run kgdb serial port */
-
 /* what's this ? it's not used anywhere */
 #define CONFIG_KGDB_SER_INDEX	1		/* which serial port to use */
 #endif
@@ -159,11 +150,13 @@
  * Miscellaneous configurable options
  */
 #define	CONFIG_SYS_LONGHELP				/* undef to save memory		*/
-#define	CONFIG_SYS_PROMPT		"my2440 # "	/* Monitor Command Prompt	*/
+#define	CONFIG_SYS_PROMPT		"yixi-sha# "	/* Monitor Command Prompt	*/
 #define	CONFIG_SYS_CBSIZE		256		/* Console I/O Buffer Size	*/
 #define	CONFIG_SYS_PBSIZE (CONFIG_SYS_CBSIZE+sizeof(CONFIG_SYS_PROMPT)+16) /* Print Buffer Size */
 #define	CONFIG_SYS_MAXARGS		16		/* max number of command args	*/
 #define CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE	/* Boot Argument Buffer Size	*/
+#define CONFIG_CMDLINE_EDITING     /* 使命令行支持通过上下键翻阅命令历史 */
+#define CONFIG_AUTO_COMPLETE       /* 使命令行支持自动补齐 */
 
 #define CONFIG_SYS_MEMTEST_START	0x30000000	/* memtest works on	*/
 #define CONFIG_SYS_MEMTEST_END		0x33F00000	/* 63 MB in DRAM	*/
@@ -200,6 +193,7 @@
 /*-----------------------------------------------------------------------
  * FLASH and environment organization
  */
+
 #if 0
 #define CONFIG_AMD_LV400	1	/* uncomment this if you have a LV400 flash */
 #endif
@@ -222,8 +216,6 @@
 /* timeout values are in ticks */
 #define CONFIG_SYS_FLASH_ERASE_TOUT	(5*CONFIG_SYS_HZ) /* Timeout for Flash Erase */
 #define CONFIG_SYS_FLASH_WRITE_TOUT	(5*CONFIG_SYS_HZ) /* Timeout for Flash Write */
-
-
 
 #define	CONFIG_ENV_IS_IN_NAND	1
 #define CONFIG_ENV_OFFSET		0x80000	
